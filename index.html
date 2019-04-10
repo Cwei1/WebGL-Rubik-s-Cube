@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html>
+<head>
+<!--   <style>
+      div {
+  height: auto; /*if more info comes on the page, it will stretch down*/
+  width: 1000px;
+  margin: 0 auto; /*this will cause the div to be in the center*/
+  }
+  </style> -->
+  <title>Rubik's Cube</title>
+  <script id="vertex-shader" type="x-shader/x-vertex">
+    attribute vec4 vPosition;
+    attribute vec4 vColor;
+    varying vec4 fColor;
+    
+    uniform mat4 projectionMatrix;
+    uniform mat4 modelViewMatrix;
+    void main() {
+        fColor = vColor;
+        gl_Position = projectionMatrix * modelViewMatrix * vPosition;
+    }
+  </script>
+  <script id="fragment-shader" type="x-shader/x-fragment">
+    precision mediump float;
+     
+    varying vec4 fColor;
+     
+    void main () {
+      gl_FragColor = fColor;
+    }
+  </script>
+  <script type="text/javascript" src="MV.js"></script>
+  <script type="text/javascript" src="webgl-utils.js"></script>
+  <script type="text/javascript" src="initShaders.js"></script>
+  
+  <script type="text/javascript" src="index2.js"></script>
+  <style>
+  button {
+  -webkit-transition-duration: 0.4s; /* Safari */
+  transition-duration: 0.4s;
+  border: none;
+  padding: 5px;
+  border-radius: 8px;
+}
+
+button:hover {
+  background-color: #f4511e; /* Green */
+  color: white;
+}
+button:focus {outline:0;}
+</style>
+</head>
+<body>
+<div align="center">
+    <h1 style="width: 28%;font-size: 175%">WebGL Rubik's Cube</h1>
+
+  <canvas id="gl-canvas" width="512" height="512" style="border:7px solid;width: 28%;height: 28%;">
+    Oops, your browser doesn't support the HTML5 canvas element
+  </canvas>
+   <h3 id="FinishedField" style="width: 28%;font-size: 220%;"></h3>
+</div>
+  <br/>
+  <div style="width: 10%;height: 100%;position: absolute;top:0px; margin-left: 73%">
+<center>
+  <b><u><h3>Vertical Shifts: </h3></u></b>
+  <button id= "LiButton" style="width:40%;height:auto;font-size: auto;">Left<br/>(W) ↑</button>
+  <button id= "LButton" style="width:40%;height:auto;font-size: auto;">Left<br/>(E) ↓</button>
+  </br>
+  </br>
+    <button id= "MiButton" style="width:40%;height:auto;font-size: auto;">Mid<br/>(S) ↑</button>
+  <button id= "MButton" style="width:40%;height:auto;font-size: auto;">Mid<br/>(D) ↓</button>
+</br>
+</br>
+  <button id= "RButton" style="width:40%;height:auto;font-size: auto;">Right<br/>(X) ↑</button>
+  <button id= "RiButton" style="width:40%;height:auto;font-size: auto;">Right<br/>(C) ↓</button>
+  
+</br>
+</br>
+</center>
+<center>
+  <b><u><h3>Horizontal Shifts: </h3></u></b>
+    <button id= "DButton" style="width:40%;height:auto;font-size: auto;">Top<br/>(R) ←</button>
+    <button id= "DiButton" style="width:40%;height:auto;font-size: auto;">Top<br/>(T) →</button>
+
+ 
+  <br>
+  <br>
+    <button id= "EButton" style="width:40%;height:auto;font-size: auto;">Mid<br/>(F) ←</button>
+    <button id= "EiButton" style="width:40%;height:auto;font-size: auto;">Mid<br/>(G) →</button>
+
+  <br>
+  <br>
+
+  <button id= "UiButton" style="width:40%;height:auto;font-size: auto;">Low<br/>(V) ←</button>
+    <button id= "UButton" style="width:40%;height:auto;font-size: auto;">Low<br/>(B) →</button>
+
+  <br>
+  <br>
+</center>
+	<center>
+  <b><u><h3>Parallel Shifts: </h3></u></b>
+    <button id= "BiButton" style="width:40%;height:auto;font-size: auto;">Front<br/>(Y) ←</button>
+   <button id= "BButton" style="width:40%;height:auto;font-size: auto;">Front<br/>(U) →</button>
+
+  
+    <br>
+  <br> 
+  <button id= "SButton" style="width:40%;height:auto;font-size: auto;">Mid<br/>(H) ←</button>
+    <button id= "SiButton" style="width:40%;height:auto;font-size: auto;">Mid<br/>(J) →</button>
+
+
+
+    <br>
+  <br>
+    <button id= "FButton" style="width:40%;height:auto;font-size: auto;">Back<br/>(N) ←</button>
+     <button id= "FiButton" style="width:40%;height:auto;font-size: auto;">Back<br/>(M) →</button>
+
+    <br>
+  <br>
+
+</center>
+  </div>
+  <br/>
+  <br/>
+  <br/>
+  
+  <div style="width: 25%;position: absolute;top:10%;height: 90%;left: 7%">
+    <form style="position: absolute; width: 100%;">
+      <center>
+      Number of Turns: 
+    
+      <br>
+      <br>
+      <input style="width: 50%;" type="text" id="randomTurnCount"><br>
+    </form>
+    <br>
+    </center>
+  <button id= "RandomButton" style="position: absolute;margin-top: 22%;width:50%;font-size: 125%;height: auto;left:25%;padding-top: 4%;padding-bottom: 4%;">Randomize!</button>
+  <button id= "LoadButton" style="position: absolute; margin-top: 72%;width:50%; height:auto;font-size: 125%;left:25%;padding-top: 4%;padding-bottom: 4%;">Load File</button>
+  <button id= "SaveButton" style="position: absolute; margin-top: 92%;width:50%; height:auto;font-size: 125%;left:25%;padding-top: 4%;padding-bottom: 4%;">Save Cube</button>
+  <a download="cubeState.txt" href="" id="downloadlink" style="position: absolute; margin-top:114%;width: 50%;font-size: auto;left:27%"></a>
+  <input type="file" id="files" name="files[]" style="position: absolute;margin-top:57%;width:100%;left:25%;"/>
+  <output id="list"></output>
+  <script>
+    function handleFileSelect(evt) {
+    var files = evt.target.files; // FileList object
+      var reader = new FileReader();
+      f = files[0];
+      // Closure to capture the file information.
+      reader.onload = (function(theFile) {
+        fileLoaded = true;
+        return function(e) {
+          fileContent = JSON.parse(reader.result);
+          var x, y, z;
+          for (x = 0; x < 3; x++) {
+            for (y = 0; y < 3; y++) {
+              for (z = 0; z < 3; z++) {
+                fileContent[x][y][z][4].matrix = true;
+              }
+            }
+          }
+        }
+      })(f);
+      // Read in the image file as a data URL.
+      reader.readAsText(f);
+    }
+  document.getElementById('files').addEventListener('change', handleFileSelect, false);
+  </script>
+</div>
+</body>
+</html>
+
